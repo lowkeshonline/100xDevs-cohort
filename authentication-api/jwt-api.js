@@ -1,8 +1,12 @@
-//User auth api using Express and Generic Token
+//User auth api using Express & JWT
+
 
 const express = require('express');
-const PORT = 3000;
+const jwt = require('jsonwebtoken');
 const app = express();
+const PORT = 3000;
+
+const JWT_SECRET = "elaunnavrababu";
 
 const users = [];
 
@@ -45,20 +49,6 @@ const courses = [
   }
 ]
 
-function generateToken() {
-    let token;
-    const characters = [
-            'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-            'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-            '0','1','2','3','4','5','6','7','8','9'
-        ];
-
-        for(let i = 0; i <= 32; i++){
-            token += characters[(Math.floor(Math.random() * 10))]
-        }
-        return token;
-}
-
 app.use(express.json());
 
 app.post('/signup', (req,res) => {
@@ -86,27 +76,28 @@ app.post('/signin', (req,res) => {
     const validUser = users.find(u => u.username === username && password === password);
 
     if(validUser) {
-        const token = generateToken();
-
-        validUser.token = token;
-        res.status(200).json(validUser);
+        const token = jwt.sign({
+            username : username
+        }, JWT_SECRET);
+        res.status(200).json(token);
     } else {
         res.status(403).json({message : "Invalid Login Credentials"});
     }
 });
 
-
-app.get('/courses', (req,res) => {
+app.get('/courses' , (req,res) => {
     const token = req.headers.token;
+    
+    const decoded = jwt.verify(token , JWT_SECRET);
+    const username = decoded.username;
 
-    const userWithToken = users.find(u => u.token === token);
+    const loggedInUser = users.find(u => u.username === username);
 
-    if(userWithToken.token === token) {
-        res.status(200).json(courses);
+    if(loggedInUser) {
+        res.status(200).json(loggedInUser);
     } else {
-        res.status(403).json(userWithToken);
+        res.status(403).json({message : "Invalid json"});
     }
-});
+})
 
-
-app.listen(3000);
+app.listen(PORT);

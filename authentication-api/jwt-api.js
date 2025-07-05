@@ -51,6 +51,17 @@ const courses = [
 
 app.use(express.json());
 
+function authCheck(req, res, next) {
+
+    const token = req.headers.token;
+    const decodedToken = jwt.verify(token, JWT_SECRET);
+
+    const userFound = users.find(u => u.username == decodedToken.username);
+    req.username = userFound;
+
+    next();
+}
+
 app.post('/signup', (req,res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -73,7 +84,7 @@ app.post('/signin', (req,res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    const validUser = users.find(u => u.username === username && password === password);
+    const validUser = users.find(u => u.username === username && u.password === password);
 
     if(validUser) {
         const token = jwt.sign({
@@ -85,18 +96,12 @@ app.post('/signin', (req,res) => {
     }
 });
 
-app.get('/courses' , (req,res) => {
-    const token = req.headers.token;
-    
-    const decoded = jwt.verify(token , JWT_SECRET);
-    const username = decoded.username;
+app.get('/courses' , authCheck , (req,res) => {
 
-    const loggedInUser = users.find(u => u.username === username);
-
-    if(loggedInUser) {
-        res.status(200).json(loggedInUser);
+    if(req.username) {
+        res.status(200).json();
     } else {
-        res.status(403).json({message : "Invalid json"});
+        res.status(403).json({message : "Invalid token"});
     }
 })
 

@@ -8,8 +8,6 @@ const PORT = 3000;
 
 const JWT_SECRET = "elaunnavrababu";
 
-const users = [];
-
 const courses = [
   {
     "id": 1,
@@ -49,6 +47,7 @@ const courses = [
   }
 ]
 
+
 app.use(express.json());
 
 function authCheck(req, res, next) {
@@ -61,6 +60,10 @@ function authCheck(req, res, next) {
 
     next();
 }
+
+app.get('/' , (req,res) => {
+    res.sendFile(__dirname + '/public/index.html')
+})
 
 app.post('/signup', (req,res) => {
     const username = req.body.username;
@@ -82,15 +85,12 @@ app.post('/signup', (req,res) => {
 
 app.post('/signin', (req,res) => {
     const username = req.body.username;
-    const password = req.body.password;
 
-    const validUser = users.find(u => u.username === username && u.password === password);
-
-    if(validUser) {
+    if(username) {
         const token = jwt.sign({
             username : username
         }, JWT_SECRET);
-        res.status(200).json(token);
+        res.status(200).json({ token });
     } else {
         res.status(403).json({message : "Invalid Login Credentials"});
     }

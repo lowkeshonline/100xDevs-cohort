@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.10.0/axios.min.js" integrity="sha512-WkZrEcQ5LMyNy6Y2PQf+Tu3vMcsmKKRKuPXtJSTHQJ3mpuvLRlA5dlDDhrrcXfyWr6Z/y3wIMfjfqVFO/gDZYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <div id="sign-up">
+        <label for="signup-username"></label>
+        <input type="text" id="signup-username" placeholder="Username">
+        <label for="signup-password"></label>
+        <input type="password" id="signup-password" placeholder="Username">
+        <button type="submit" onclick="signupFunc()">Submit Details</button>
+    </div>
+    <div id="sign-in">
+        <label for="signin-username"></label>
+        <input type="text" id="signin-username" placeholder="password">
+        <label for="signin-password"></label>
+        <input type="password" id="signin-password" placeholder="password">
+        <button type="submit" onclick="signinFunc()">Submit Details</button>
+    </div>
+    <script>
+        function signupFunc() {
+                const signupUsername = document.querySelector('#signup-username').value;
+                const signupPassword = document.querySelector('#signup-password').value;
+
+                localStorage.setItem('username', signupUsername);
+                localStorage.setItem('password', signupPassword);
+        }
+
+        async function signinFunc() {
+                const signinUsername = document.querySelector('#signin-username').value;
+                const signinPassword = document.querySelector('#signin-password').value;
+
+                let response;
+
+                if(signinUsername == localStorage.getItem('username') && signinPassword == localStorage.getItem('password')){
+                    response = await axios.post('http://localhost:3000/signin' , {
+                        'username' : signinUsername
+                    })
+                }
+                console.log("Response from server : " , response.data);
+            localStorage.setItem('token' , response.data.token);
+        }
+
+    </script>
+</body>
+</html>

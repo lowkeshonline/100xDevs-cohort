@@ -21,30 +21,48 @@
         <input type="password" id="signin-password" placeholder="password">
         <button type="submit" onclick="signinFunc()">Submit Details</button>
     </div>
+    <div class="details">
+        <button type="submit" onclick="getUserData()">Get user details</button>
+        <h3>Details : <p id="user-data">User data</p></h3>
+    </div>
     <script>
         function signupFunc() {
-                const signupUsername = document.querySelector('#signup-username').value;
-                const signupPassword = document.querySelector('#signup-password').value;
-
-                localStorage.setItem('username', signupUsername);
-                localStorage.setItem('password', signupPassword);
+            const signupUsername = document.querySelector('#signup-username').value;
+            const signupPassword = document.querySelector('#signup-password').value;
+            localStorage.setItem('username', signupUsername);
+            localStorage.setItem('password', signupPassword);
         }
 
         async function signinFunc() {
-                const signinUsername = document.querySelector('#signin-username').value;
-                const signinPassword = document.querySelector('#signin-password').value;
+            const signinUsername = document.querySelector('#signin-username').value;
+            const signinPassword = document.querySelector('#signin-password').value;
 
-                let response;
+            let response;
 
-                if(signinUsername == localStorage.getItem('username') && signinPassword == localStorage.getItem('password')){
-                    response = await axios.post('http://localhost:3000/signin' , {
-                        'username' : signinUsername
-                    })
-                }
-                console.log("Response from server : " , response.data);
+            if(signinUsername == localStorage.getItem('username') && signinPassword == localStorage.getItem('password')){
+                response = await axios.post('http://localhost:3000/signin' , {
+                    'username' : signinUsername
+                })
+            }
             localStorage.setItem('token' , response.data.token);
         }
 
+        async function getUserData() {
+            const userData = document.querySelector('#user-data');
+            const token = localStorage.getItem('token');
+
+            const response = await axios.get('http://localhost:3000/courses' , {
+                headers : {
+                    "token" : token
+                }
+            })
+            userData.textContent = `
+            Course title : ${response.data.title}
+            Instructor : ${response.data.instructor}
+            Category : ${response.data.category}
+            Price : ${response.data.price}
+            `;
+        }
     </script>
 </body>
 </html>

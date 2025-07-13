@@ -9,6 +9,20 @@ connectToDB();
 
 app.use(express.json());
 
+function auth(req , res, next) {
+    const { token } = req.headers;
+    const decodedToken = JWT.verify(token , process.env.JWT_SECRET_KEY);
+    const user = decodedToken.id;
+    
+    if(user){
+        next();
+    } else {
+        res.status(403).json({
+            message : "Invalid Credentials"
+        })
+    }
+}
+
 app.post('/signup' , async (req,res) => {
     const { email , password } = req.body;
 
@@ -52,11 +66,13 @@ app.post('/signin' , async (req,res) => {
     }
 })
 
-app.post('/todo' , function(req,res) {
-    
+app.post('/todo' , auth , function(req,res) {
+    res.json({
+        message : "You are logged in"
+    })
 })
 
-app.get('/todos' , function(req,res) {
+app.get('/todos' , auth, function(req,res) {
     
 })
 

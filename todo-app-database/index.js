@@ -33,7 +33,7 @@ app.post('/signup' , async (req,res) => {
         })
 
         res.json({
-            message : "Data insertion succcesful",
+            message : "Database insertion succcesful",
             data : user
         })
 

@@ -1,15 +1,16 @@
 const express = require('express');
-const { userModel } = require('./model.mongoose');
+const { userModel , todoModel } = require('./model.mongoose');
 const connectToDB = require('./mongo.config');
 const JWT = require('jsonwebtoken');
 require('dotenv').config();
+const bcrypt = require('bcrypt');
 const app = express();
 
 connectToDB();
 
 app.use(express.json());
 
-function auth(req , res, next) {
+function auth(req, res, next) {
     const { token } = req.headers;
     const decodedToken = JWT.verify(token , process.env.JWT_SECRET_KEY);
     const user = decodedToken.id;
@@ -27,9 +28,13 @@ app.post('/signup' , async (req,res) => {
     const { email , password } = req.body;
 
     try {
+        const hashedPassword = await bcrypt.hash(password, 5);
+
+        console.log(hashedPassword);
+
         const user = await userModel.create({
             email : email,
-            password : password
+            password : hashedPassword
         })
 
         res.json({
@@ -48,15 +53,20 @@ app.post('/signin' , async (req,res) => {
     const { email , password } = req.body;
 
     try {
+
         const user = await userModel.findOne({ email });
-        if (user.email === email && user.password === password) {
+
+        const compareRes = await bcrypt.compare(password, user.password);
+        console.log(compareRes);
+
+        if (compareRes) {
             const token = JWT.sign({ id : user._id.toString() }, process.env.JWT_SECRET_KEY);
             res.status(200).json({
                 token : token
             })
         } else {
             res.status(403).json({
-                message : "User not found"
+                message : "Wrong Credentials"
             })
         }
     } catch (err) {

@@ -19,15 +19,11 @@ const todoSchema = new mongoose.Schema({
         type : String,
         required : true,
     },
-    description : {
-        type : String,
-        required : true
-    },
     done : {
         type : Boolean,
         required : true
     },
-    id : {
+    userId : {
         type : ObjectID,
         required : true
     }

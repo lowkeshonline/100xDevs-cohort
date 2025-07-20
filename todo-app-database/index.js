@@ -4,6 +4,7 @@ const connectToDB = require('./mongo.config');
 const JWT = require('jsonwebtoken');
 require('dotenv').config();
 const bcrypt = require('bcrypt');
+const { z } = require('zod');
 const app = express();
 
 connectToDB();
@@ -13,9 +14,10 @@ app.use(express.json());
 function auth(req, res, next) {
     const { token } = req.headers;
     const decodedToken = JWT.verify(token , process.env.JWT_SECRET_KEY);
-    const user = decodedToken.id;
     
-    if(user){
+    
+    if(decodedToken){
+        req.body.userId = decodedToken.id;
         next();
     } else {
         res.status(403).json({
@@ -25,6 +27,19 @@ function auth(req, res, next) {
 }
 
 app.post('/signup' , async (req,res) => {
+    const requiredBody = z.object({
+        email : z.string().min(3).email(),
+        password : z.string().max(20)
+    })
+
+    const parsedData = requiredBody.safeParse(req.body);
+
+    if(!parsedData.success){
+        res.json({
+            message : "Incorrect format of data"
+        })
+    }
+
     const { email , password } = req.body;
 
     try {
@@ -76,14 +91,30 @@ app.post('/signin' , async (req,res) => {
     }
 })
 
-app.post('/todo' , auth , function(req,res) {
+app.post('/todo' , auth , async function(req,res) {
+    const userId = req.body.userId;
+    const title = req.body.title;
+    const done = req.body.done;
+    console.log(userId);
+    await todoModel.create({
+        title : title,
+        done : done,
+        userId : userId
+    })
     res.json({
-        message : "You are logged in"
+        userId : userId
     })
 })
 
-app.get('/todos' , auth, function(req,res) {
-    
+app.get('/todos' , auth, async function(req,res) {
+    const userId = req.body.userId;
+    const todos = await todoModel.find({
+        userId : userId
+    })
+    console.log(todos);
+    res.json({
+        todos
+    })
 })
 
 app.listen(process.env.PORT, () => {

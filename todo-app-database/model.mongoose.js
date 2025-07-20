@@ -21,11 +21,11 @@ const todoSchema = new mongoose.Schema({
     },
     done : {
         type : Boolean,
-        required : true
+        required : true,
     },
     userId : {
         type : ObjectID,
-        required : true
+        required : true,
     }
 })
 

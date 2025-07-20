@@ -113,7 +113,7 @@ app.get('/todos' , auth, async function(req,res) {
     })
     console.log(todos);
     res.json({
-        todos
+        todos,
     })
 })
 

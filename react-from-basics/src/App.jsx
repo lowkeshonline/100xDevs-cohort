@@ -1,27 +1,35 @@
-import React, { useEffect, useState } from "react"
+import React from "react";
 
-function App() {
 
-  
-  const [currTab , setCurrTab] = useState("Home");
+function App (){
 
-  
-  
+  let todos = [{
+    title : "Go to college",
+    status : true
+  } , {
+    title : "Go to office",
+    status : false
+  } , {
+    title : "Do project",
+    status : false
+  }]
 
-  return(
+  const todoComponents = todos.map(todo => <TodoComponent title={todo.title} status={todo.status}></TodoComponent>)
+
+  return (
     <div>
-      <button onClick={() => {
-        setCurrTab("Home")
-      }}>Home</button>
-      <button onClick={() => {
-        setCurrTab("Feed")
-      }}>Feed</button>
-      <button onClick={() => {
-        setCurrTab("Settings")
-      }}>Settings</button>
-      <p>{currTab}</p>
+      {todoComponents}
     </div>
   )
 }
+
+function TodoComponent({title , status}){
+  return (
+    <div>
+      {title} - {status ? "Complete" : "Pending"}
+    </div>
+  )
+}
+
 
 export default App

@@ -1,7 +1,11 @@
-import React from "react";
+import { useContext } from "react";
+import { BulbContextValues } from "./lightBulb";
 
 
-function LightBulbStatus({lightBulbStatus}) {
+function LightBulbStatus() {
+
+    const {lightBulbStatus} = useContext(BulbContextValues);
+
     return (
         <h3>The lightBulb is {lightBulbStatus ? "On" : "Off"}</h3>
     )

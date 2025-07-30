@@ -1,14 +1,18 @@
+import { useContext } from "react";
+import { BulbContextValues } from "./lightBulb";
 
-function LightBulbSwitch({lightBulbStatus , setLightBulbStatus}){
+function LightBulbSwitch(){
+
+    const {lightBulbStatus , setLightBulbStatus} = useContext(BulbContextValues);
 
     function turnOffLight(){
-        setLightBulbStatus(prev => !prev);
+        setLightBulbStatus(!lightBulbStatus);
     }
     
 
     return(
         <>
-            <button onClick={turnOffLight}>Turn {lightBulbStatus ? "Off" : "On"}</button>
+            <button onClick={turnOffLight}>Toggle Bulb</button>
         </>
     )
 }

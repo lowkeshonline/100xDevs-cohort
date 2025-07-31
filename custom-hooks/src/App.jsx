@@ -1,34 +1,33 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
+function useFetch () {
 
-function useCounter() {
+  const [post , setPost] = useState({});
 
-  const [countState , setCountState] = useState(0);
-
-  function increaseCount() {
-    setCountState(prev => prev + 1);
+  async function getPost () {
+    const response = await fetch("https://json-placeholder.mock.beeceptor.com/posts");
+    const postDetails = await response.json();
+    
+    setPost(postDetails);
   }
+
+  useEffect(() => {
+    getPost();
+  } , []);
 
   return {
-    countState : countState,
-    increaseCount : increaseCount
+    post : post,
   }
-
 }
-
 
 function App() {
 
-  const {countState , increaseCount} = useCounter();
+  const { post } = useFetch(); 
 
   return (
     <>
-      <div className="card">
-        <button onClick={increaseCount}>
-          count is {countState}
-        </button>
-      </div>
+      <div>{JSON.stringify(post[2]?.title)}</div>
     </>
   )
 }

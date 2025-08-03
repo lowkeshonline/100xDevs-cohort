@@ -1,23 +1,30 @@
 import './App.css'
-import {RecoilRoot, useRecoilValue , atom} from 'recoil';
-import { friendsAtom, messagesAtom, postsAtom, totalNotificationSelector } from './atoms/headerAtoms';
+import { useRecoilValue } from 'recoil'
+import { todoAtomFamily } from './atoms/headerAtoms'
 
 function App() {
 
-  const messages = useRecoilValue(messagesAtom);
-  const friends = useRecoilValue(friendsAtom);
-  const posts = useRecoilValue(postsAtom);
-  const totalNotifications = useRecoilValue(totalNotificationSelector);
-
   return (
     <>
+      <h1>Your Todo-List</h1>
+      <Todo id={1}/>
+      <Todo id={2}/>
+      <Todo id={3}/>
+      <Todo id={4}/>
+    </>
+  )
+}
 
-        <button>Home</button>
-        <button>Messages ({messages})</button>
-        <button>Friends ({friends})</button>
-        <button>Posts ({posts})</button>
-        <button>Profile ({totalNotifications})</button>
+function Todo({id}) {
 
+  const todo = useRecoilValue(todoAtomFamily(id));
+
+  return(
+    <> 
+      <div>{todo.title}</div>
+      <div>{todo.completed ? "Finished" : "Unfinished"}</div>
+      <div>{todo.dueDate}</div>
+      <br></br>
     </>
   )
 }
